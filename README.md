@@ -1,4 +1,5 @@
-# Quantization TopK Sparsification
+# Bias Variance Tradeoff Gradient Compression
+
 
 ## Description
 In our project, we investigate in the tradeoff between variance and biasedness of quantization in FL. We focus on the topK sparsification quantizors and iid data that are uniformly and normally distributed. In the code, we observe the behaviors of weight of the first quantizer $w1$ and Mean Square Error of the quantization with the change of K value we choose for the first quantizes $k1$. 
@@ -19,12 +20,13 @@ The file ''Behavior_of_Asymptotic_case_in_QPF_using_MCS /w1_MSE_for_uniform_norm
 _Limit_: since we need to iterate the simulation $2^9$ times for each data entry(specify with parameters of distribution), the simulation will be very costly. In this case, I use np.partition in isFirstEntryAmongTopK_mce with a cost of O(n). However, there might be other method to further improve on the cost which allows us to improve the precision with larger datasets and more iterations.
 
 ### Quadratic Programming
-We investigate the solution to quadratic programming problem with equality constraint, without equality constraint, and with asymptotic case.
+We investigate the solution to quadratic programming problem with equality constraint, without equality constraint, and with asymptotic case. 
 - `eQTQ_ks`, `eZTQ_ks`, `equal_constr_ks` are functions returning quadratic part$P$, linear part$q$, equality constraint$A, b$ of our qudratic programming function.
 - `quad_prog_func`: We can determine either create normal or uniform data by controlling the function's parameter. This function can return the optimal weight, corresponding MSE, conditional expectations of $x$ and $x^2$ and mean of $x$.
 - `lagra_approxm_qp`: Similar with `quad_prog_func`, while only returning a list of first weights`W` in asymptotic case.
 - `quad_prog_func_uncstr`: Similar with `quad_prog_func`, while no longer having equal constraint.
 - `quad_prog_func_approxAsym`: the Asymptotic case is approximate by approaching d to positive inifinity. In this case, we modifies the equality constraint for the first data entry by using `A_matrix[0][0] = 0`. 
+For the quadratic programming in all cases, I create both analytic method version(Uniform Data Only) - end with `_a` in the function name - and monte carlo simulation version(Both Uniform and Normal Data).
 
 #### Plot of $w_1$ vs $k_1$ and $MSE$ vs $k_1$ in different cases
 - `K_3plots`: This function will plot $w_1$ vs $k_1$ and `MSE` vs $k_1$ in cases:
@@ -36,8 +38,8 @@ We investigate the solution to quadratic programming problem with equality const
     - Result `MSE` of quadratic programming function with d goes to infinity vs $k_1$
 
 In conclusion, we can tell that behavior of $w_1$ vs $k_1$ in asymptotic case is similar with the one of quadratic programming function with constraint. Behavior of `MSE` vs $k_1$ in asymptotic case is similar with the one of quadratic programming function without constraint.
+- `K_3plots_a` is the function using analytic method version(Uniform Data Only) of quadratic programming functions.
 
 ### Limits
 - Why behavior of `MSE` vs $k_1$ in asymptotic case is different from the one of quadratic programming function with constraint remains unexplained or uninterpreted.
 - When simulating the data entries, we only observed normally and uniformlly distributed entry. And $w_1$ and `MSE` only performs with a clearer trend when the data entries' distributions are approaching standard uniform and standard normal distribution.
-
